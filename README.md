@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# YouTube分析ツール
 
-## Getting Started
+急成長YouTubeチャンネルを一瞬で発見。柔軟な条件検索で、あなたの次のビジネスチャンスを見つけよう。
 
-First, run the development server:
+## 📋 プロジェクト概要
 
+競合（ユーチュラ、vidIQ等）にない「柔軟な条件検索」が差別化ポイント。
+
+### 主な機能
+- ✅ YouTube Data API v3 によるリアルタイム検索
+- ✅ キーワード・カテゴリ・登録者数・成長率での絞り込み
+- ✅ チャンネル詳細（登録者推移グラフ・最終投稿日）
+- ✅ Supabase 認証（ログイン・登録）
+- 🚧 ウォッチリスト（実装予定）
+- 🚧 検索回数制限（実装予定）
+- 🚧 Stripe 決済（実装予定）
+
+## 🚀 セットアップ
+
+### 1. 依存関係インストール
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. 環境変数設定
+`.env.local` を作成（`.env.local.example` を参考）:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# YouTube Data API v3
+YOUTUBE_API_KEY=AIza...
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+```
 
-## Learn More
+**YouTube API キー取得:**
+1. [Google Cloud Console](https://console.cloud.google.com/) でプロジェクト作成
+2. `YouTube Data API v3` を有効化
+3. 認証情報 > API キーを作成
 
-To learn more about Next.js, take a look at the following resources:
+**Supabase プロジェクト作成:**
+1. [Supabase](https://supabase.com) でプロジェクト作成
+2. `Settings > API` から URL と anon key を取得
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. 開発サーバー起動
+```bash
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+http://localhost:3000 でアクセス
 
-## Deploy on Vercel
+## 📚 技術スタック
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **フレームワーク**: Next.js 14 (App Router)
+- **言語**: TypeScript
+- **スタイリング**: Tailwind CSS
+- **グラフ**: Recharts
+- **アイコン**: Lucide React
+- **認証**: Supabase Auth
+- **データベース**: Supabase (PostgreSQL) *未設定*
+- **決済**: Stripe *未設定*
+- **API**: YouTube Data API v3
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📁 ディレクトリ構成
+
+```
+youtube-analyzer/
+├── app/               # Next.js App Router
+│   ├── api/          # API Routes
+│   ├── search/       # 検索ページ
+│   ├── results/      # 検索結果
+│   ├── channel/[id]/ # チャンネル詳細
+│   ├── login/        # ログイン
+│   └── signup/       # 登録
+├── components/        # React コンポーネント
+├── lib/              # ユーティリティ・API連携
+├── context/          # React Context
+├── types/            # TypeScript 型定義
+└── .env.local        # 環境変数
+```
+
+## 🔑 API エンドポイント
+
+### `/api/search`
+YouTube チャンネル検索
+- クエリパラメータ: `keyword`, `categories`, `minSub`, `maxSub`, `minGrowth`
+- レスポンス: `{ channels: Channel[], source: "youtube" | "mock" }`
+
+### `/api/channel/[id]`
+チャンネル詳細取得
+- パラメータ: `id` (YouTube チャンネルID)
+- レスポンス: `{ channel: Channel, source: "youtube" | "mock" }`
+
+## 📊 現在の進捗
+
+詳細は [PROGRESS.md](./PROGRESS.md) を参照。
+
+## 🛠️ 次のステップ
+
+1. Supabase テーブル作成（users, watchlist, channels, etc.）
+2. ウォッチリスト機能実装
+3. 検索回数制限
+4. Stripe 決済連携
+5. 定期的なデータ収集（成長率計算）
+
+## 📄 ライセンス
+
+プライベートプロジェクト

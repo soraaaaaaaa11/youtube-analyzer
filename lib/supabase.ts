@@ -1,0 +1,12 @@
+import { createBrowserClient } from "@supabase/ssr";
+
+/**
+ * ブラウザ（クライアントコンポーネント）用 Supabase クライアント
+ * 環境変数が未設定の場合はダミー値で初期化（認証は機能しない）
+ */
+export function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://placeholder.supabase.co",
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "placeholder-anon-key"
+  );
+}
