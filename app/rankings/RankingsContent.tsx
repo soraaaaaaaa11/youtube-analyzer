@@ -143,7 +143,7 @@ export default function RankingsContent() {
     <div className="flex gap-6">
       {/* カテゴリサイドバー（PC） */}
       <aside className="hidden lg:block w-56 flex-shrink-0">
-        <div className="sticky top-24 space-y-1">
+        <div className="sticky top-24 space-y-1 max-h-[calc(100vh-7rem)] overflow-y-auto pr-1">
           <h3 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3 px-3">
             カテゴリ
           </h3>

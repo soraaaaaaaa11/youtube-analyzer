@@ -42,23 +42,41 @@ export interface SearchResult {
   perPage: number;
 }
 
-// ランキング用15カテゴリ定義
+// ランキング用30カテゴリ定義
 export const RANKING_CATEGORIES = [
   { id: 'all', name: '総合', icon: '👑' },
+  // --- メジャーカテゴリ ---
   { id: 'entertainment', name: 'エンタメ', icon: '🎭' },
   { id: 'music', name: '音楽', icon: '🎵' },
   { id: 'gaming', name: 'ゲーム', icon: '🎮' },
   { id: 'education', name: '教育', icon: '📚' },
-  { id: 'technology', name: 'テクノロジー/AI', icon: '💻' },
-  { id: 'news', name: 'ニュース/政治', icon: '📰' },
+  { id: 'technology', name: 'テクノロジー', icon: '💻' },
+  { id: 'news', name: 'ニュース', icon: '📰' },
   { id: 'sports', name: 'スポーツ', icon: '⚽' },
   { id: 'food', name: '料理/グルメ', icon: '🍳' },
   { id: 'beauty', name: '美容/ファッション', icon: '💄' },
   { id: 'travel', name: '旅行/アウトドア', icon: '✈️' },
   { id: 'pets', name: 'ペット/動物', icon: '🐾' },
-  { id: 'business', name: '投資/ビジネス', icon: '💰' },
-  { id: 'fitness', name: 'フィットネス/健康', icon: '💪' },
-  { id: 'howto', name: 'ハウツー/DIY', icon: '🔧' },
+  { id: 'fitness', name: 'フィットネス', icon: '💪' },
+  { id: 'business', name: 'ビジネス', icon: '💼' },
+  { id: 'comedy', name: 'コメディ', icon: '😂' },
+  { id: 'lifestyle', name: 'ライフスタイル', icon: '🏠' },
+  { id: 'automotive', name: '車/バイク', icon: '🚗' },
+  { id: 'movies', name: '映画', icon: '🎬' },
+  { id: 'anime', name: 'アニメ', icon: '🎌' },
+  { id: 'politics', name: '政治', icon: '🏛️' },
+  { id: 'religion', name: '宗教/哲学', icon: '🙏' },
+  // --- キーワードベースカテゴリ ---
+  { id: 'ai', name: 'AI', icon: '🤖' },
+  { id: 'sidejob', name: '副業', icon: '💵' },
+  { id: 'investing', name: '投資/FX', icon: '📈' },
+  { id: 'programming', name: 'プログラミング', icon: '👨‍💻' },
+  { id: 'english', name: '英語学習', icon: '🇺🇸' },
+  { id: 'diet', name: 'ダイエット', icon: '🥗' },
+  { id: 'muscle', name: '筋トレ', icon: '🏋️' },
+  { id: 'parenting', name: '子育て', icon: '👶' },
+  { id: 'diy', name: 'DIY/ハウツー', icon: '🔧' },
+  { id: 'vlog', name: 'Vlog', icon: '📷' },
 ] as const;
 
 export type RankingCategoryId = typeof RANKING_CATEGORIES[number]['id'];

@@ -194,7 +194,7 @@ export default function HomePage() {
                       <Eye className="w-5 h-5 text-purple-400" />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-400">15カテゴリ</p>
+                      <p className="text-xs text-gray-400">30カテゴリ</p>
                       <p className="text-xl font-bold text-purple-400">日本特化</p>
                     </div>
                   </div>
@@ -211,7 +211,7 @@ export default function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
               { target: 600, suffix: "+", label: "分析済みチャンネル" },
-              { target: 15, suffix: "", label: "カテゴリ" },
+              { target: 30, suffix: "", label: "カテゴリ" },
               { target: 14, suffix: "日間", label: "無料トライアル" },
               { target: 100, suffix: "%", label: "広告なし" },
             ].map((stat, i) => (
@@ -442,11 +442,11 @@ export default function HomePage() {
               カテゴリから探す
             </h2>
             <p className="text-gray-500 dark:text-gray-400">
-              15カテゴリから注目チャンネルを探そう
+              30カテゴリから注目チャンネルを探そう
             </p>
           </div>
         </FadeIn>
-        <StaggerContainer className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-5 gap-3" staggerDelay={0.05}>
+        <StaggerContainer className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-6 gap-3" staggerDelay={0.05}>
           {RANKING_CATEGORIES.filter(c => c.id !== "all").map((cat) => (
             <StaggerItem key={cat.id}>
               <Link
@@ -486,7 +486,7 @@ export default function HomePage() {
               {
                 icon: Globe,
                 title: "日本 + グローバル",
-                desc: "日本チャンネルに加え、グローバルのトレンドもカバー。15カテゴリで深い分析を。",
+                desc: "日本チャンネルに加え、グローバルのトレンドもカバー。30カテゴリで深い分析を。",
               },
             ].map((feature) => (
               <StaggerItem key={feature.title}>
