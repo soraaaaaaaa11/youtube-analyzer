@@ -17,6 +17,7 @@ export async function GET() {
       gamingResult,
       techResult,
       risingResult,
+      totalCountResult,
     ] = await Promise.all([
       // 日本 TOP5
       admin
@@ -68,6 +69,10 @@ export async function GET() {
         .gt("subscribers", 1000)
         .order("subscribers", { ascending: false })
         .limit(10),
+      // 総チャンネル数
+      admin
+        .from("channels")
+        .select("id", { count: "exact", head: true }),
     ]);
 
     // 急上昇 = 日本TOP10（成長率の計算にはhistoryが必要だが、簡易的に最も登録者の多い順で表示）
@@ -89,6 +94,7 @@ export async function GET() {
         technology: (techResult.data ?? []).map(dbToChannel),
       },
       rising: (risingResult.data ?? []).map(dbToChannel),
+      totalChannels: totalCountResult.count ?? 0,
     });
   } catch (e) {
     console.error("Homepage data error:", e);
