@@ -199,97 +199,78 @@ export default function WatchlistContent() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {items.map((item) => (
             <div
               key={item.id}
-              className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5 hover:shadow-lg hover:border-red-200 dark:hover:border-red-800 transition-all group"
+              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-3 hover:shadow-md hover:border-red-200 dark:hover:border-red-800 transition-all group relative"
             >
-              {/* Header: Actions */}
-              <div className="flex justify-end gap-1 mb-3">
+              {/* Actions - Top Right */}
+              <div className="absolute top-2 right-2 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                 <a
                   href={`https://www.youtube.com/channel/${item.channelId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  className="p-1 rounded text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                   title="YouTubeで見る"
                 >
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="w-3.5 h-3.5" />
                 </a>
                 <button
                   onClick={() => handleRemove(item.channelId)}
                   disabled={removingId === item.channelId}
-                  className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                  title="ウォッチリストから削除"
+                  className="p-1 rounded text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  title="削除"
                 >
                   {removingId === item.channelId ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   ) : (
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   )}
                 </button>
               </div>
 
               {/* Thumbnail & Name */}
-              <Link href={`/channel/${item.channelId}`} className="block text-center mb-4">
+              <Link href={`/channel/${item.channelId}`} className="block text-center">
                 {item.channel?.thumbnailUrl ? (
                   <Image
                     src={item.channel.thumbnailUrl}
                     alt={item.channel.title}
-                    width={80}
-                    height={80}
-                    className="rounded-full object-cover mx-auto mb-3 ring-2 ring-gray-100 dark:ring-gray-700 group-hover:ring-red-200 dark:group-hover:ring-red-800 transition-all"
+                    width={56}
+                    height={56}
+                    className="rounded-full object-cover mx-auto mb-2 ring-2 ring-gray-100 dark:ring-gray-700 group-hover:ring-red-200 dark:group-hover:ring-red-800 transition-all"
                   />
                 ) : (
-                  <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-3" />
+                  <div className="w-14 h-14 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-2" />
                 )}
-                <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors line-clamp-1">
+                <h3 className="font-medium text-sm text-gray-900 dark:text-white group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors line-clamp-1 mb-1">
                   {item.channel?.title ?? item.channelId}
                 </h3>
                 {item.channel && (
-                  <span className="inline-block text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-full mt-2">
+                  <span className="inline-block text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full">
                     {item.channel.category}
                   </span>
                 )}
               </Link>
 
-              {/* Stats */}
+              {/* Stats - Compact */}
               {item.channel && (
-                <div className="space-y-2 pt-4 border-t border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
-                      <Users className="w-4 h-4" />
-                      <span>登録者数</span>
-                    </div>
-                    <span className="font-semibold text-gray-900 dark:text-white">
-                      {formatNumber(item.channel.subscriberCount)}
-                    </span>
+                <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700 flex items-center justify-center gap-2 text-xs">
+                  <div className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
+                    <Users className="w-3 h-3" />
+                    <span>{formatNumber(item.channel.subscriberCount)}</span>
                   </div>
-                  
                   {item.subscriberChange !== 0 && (
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
-                        <TrendingUp className="w-4 h-4" />
-                        <span>追加後の変化</span>
-                      </div>
-                      <span
-                        className={`font-semibold ${
-                          item.subscriberChange > 0
-                            ? "text-green-600 dark:text-green-400"
-                            : "text-red-600 dark:text-red-400"
-                        }`}
-                      >
-                        {formatChange(item.subscriberChange)}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500 dark:text-gray-400">追加日</span>
-                    <span className="text-gray-600 dark:text-gray-300">
-                      {new Date(item.addedAt).toLocaleDateString("ja-JP")}
+                    <span
+                      className={`font-medium ${
+                        item.subscriberChange > 0
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
+                      }`}
+                    >
+                      {formatChange(item.subscriberChange)}
                     </span>
-                  </div>
+                  )}
                 </div>
               )}
             </div>
