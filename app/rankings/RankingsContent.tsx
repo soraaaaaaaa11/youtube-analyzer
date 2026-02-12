@@ -255,29 +255,38 @@ export default function RankingsContent() {
         {/* 並び替え（チャンネルランキング時のみ） */}
         {!showTrending && (
           <FadeIn delay={0.1}>
-            <div className="flex gap-1 mb-6 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit">
-              <button
-                onClick={() => setSortMode("subscribers")}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  sortMode === "subscribers"
-                    ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                }`}
-              >
-                <Users className="w-4 h-4" />
-                登録者数順
-              </button>
-              <button
-                onClick={() => setSortMode("growth")}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  sortMode === "growth"
-                    ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                }`}
-              >
-                <TrendingUp className="w-4 h-4" />
-                急成長順
-              </button>
+            <div className="mb-6">
+              <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit">
+                <button
+                  onClick={() => setSortMode("subscribers")}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    sortMode === "subscribers"
+                      ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                  }`}
+                >
+                  <Users className="w-4 h-4" />
+                  登録者数順
+                </button>
+                <button
+                  onClick={() => setSortMode("growth")}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    sortMode === "growth"
+                      ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                  }`}
+                >
+                  <TrendingUp className="w-4 h-4" />
+                  急成長順
+                </button>
+              </div>
+              {/* 急成長順の説明 */}
+              {sortMode === "growth" && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  過去7日間の登録者数増加率でランキング（毎日更新）
+                </p>
+              )}
             </div>
           </FadeIn>
         )}
@@ -391,21 +400,24 @@ export default function RankingsContent() {
                           </span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-6 flex-shrink-0">
+                      <div className="flex items-center gap-3 sm:gap-6 flex-shrink-0">
+                        {/* 成長率（growth modeのみ） */}
                         {sortMode === "growth" && channel.growthRate > 0 && (
-                          <div className="text-right hidden sm:block">
-                            <p className="text-xs text-gray-400">7日間成長率</p>
-                            <p className="font-bold text-green-600 dark:text-green-400 text-sm">
+                          <div className="text-right">
+                            <p className="text-[10px] sm:text-xs text-gray-400 hidden sm:block">7日間成長率</p>
+                            <p className="font-bold text-green-600 dark:text-green-400 text-xs sm:text-sm">
                               +{channel.growthRate.toFixed(2)}%
                             </p>
                           </div>
                         )}
-                        <div className="text-right hidden sm:block">
-                          <p className="text-xs text-gray-400">登録者数</p>
-                          <p className="font-bold text-gray-900 dark:text-white text-sm">
+                        {/* 登録者数（常に表示） */}
+                        <div className="text-right">
+                          <p className="text-[10px] sm:text-xs text-gray-400 hidden sm:block">登録者数</p>
+                          <p className="font-bold text-gray-900 dark:text-white text-xs sm:text-sm">
                             {formatNumber(channel.subscriberCount)}人
                           </p>
                         </div>
+                        {/* 総再生回数（PC/タブレットのみ） */}
                         <div className="text-right hidden md:block">
                           <p className="text-xs text-gray-400">総再生回数</p>
                           <p className="font-bold text-gray-900 dark:text-white text-sm">
@@ -434,13 +446,30 @@ export default function RankingsContent() {
 
             {channels.length === 0 && (
               <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700">
+                <div className="flex justify-center mb-4">
+                  {sortMode === "growth" ? (
+                    <TrendingUp className="w-12 h-12 text-gray-300 dark:text-gray-600" />
+                  ) : (
+                    <Users className="w-12 h-12 text-gray-300 dark:text-gray-600" />
+                  )}
+                </div>
                 <p className="text-gray-500 dark:text-gray-400 mb-2">
                   {sortMode === "growth"
-                    ? "成長率データが蓄積されるまでお待ちください（毎日更新）"
+                    ? "成長率データを計算中です"
                     : "このカテゴリにはまだチャンネルデータがありません"}
                 </p>
-                <p className="text-xs text-gray-400">
-                  データは毎日自動収集されます
+                <p className="text-xs text-gray-400 max-w-sm mx-auto">
+                  {sortMode === "growth"
+                    ? "成長率の計算には7日間以上のデータ蓄積が必要です。毎日自動でデータを収集しています。"
+                    : "データは毎日自動収集されます"}
+                </p>
+              </div>
+            )}
+            {/* 急成長データが少ない場合の案内 */}
+            {sortMode === "growth" && channels.length > 0 && channels.length < 10 && (
+              <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
+                <p className="text-sm text-amber-700 dark:text-amber-400">
+                  💡 現在、成長率データが蓄積中です。日々のデータ収集により、より多くのチャンネルがランキングに表示されるようになります。
                 </p>
               </div>
             )}
