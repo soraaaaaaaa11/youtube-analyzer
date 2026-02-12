@@ -58,6 +58,27 @@ export default function Footer() {
               </li>
             </ul>
           </div>
+
+          <div>
+            <h3 className="text-white font-semibold mb-4">法的情報</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link href="/legal" className="hover:text-white transition-colors">
+                  特定商取引法に基づく表記
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="hover:text-white transition-colors">
+                  プライバシーポリシー
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-white transition-colors">
+                  利用規約
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-sm text-center">
