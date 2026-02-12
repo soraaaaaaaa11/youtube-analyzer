@@ -39,10 +39,10 @@ export default function WatchlistButton({ channel, variant = "icon" }: Watchlist
       <button
         onClick={handleToggle}
         disabled={loading}
-        className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-colors ${
+        className={`group inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-sm hover:shadow-md ${
           inWatchlist
-            ? "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30"
-            : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
+            ? "bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700"
+            : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-2 border-gray-200 dark:border-gray-600 hover:border-red-300 dark:hover:border-red-500 hover:text-red-500 dark:hover:text-red-400"
         }`}
       >
         {loading ? (
@@ -50,9 +50,9 @@ export default function WatchlistButton({ channel, variant = "icon" }: Watchlist
         ) : inWatchlist ? (
           <Check className="w-4 h-4" />
         ) : (
-          <Bookmark className="w-4 h-4" />
+          <Bookmark className="w-4 h-4 transition-transform group-hover:scale-110" />
         )}
-        {inWatchlist ? "ウォッチリストに追加済み" : "ウォッチリストに追加"}
+        {inWatchlist ? "追加済み ✓" : "ウォッチリストに追加"}
       </button>
     );
   }

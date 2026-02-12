@@ -158,7 +158,7 @@ export default async function ChannelDetailPage({ params }: { params: Promise<{ 
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{channel.title}</h1>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2 mt-1 flex-wrap">
                   <span className="text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full">
                     {channel.category}
                   </span>
@@ -172,17 +172,16 @@ export default async function ChannelDetailPage({ params }: { params: Promise<{ 
                     YouTubeで見る
                   </a>
                 </div>
-                <div className="mt-3">
-                  <WatchlistButton channel={channel} variant="full" />
-                </div>
               </div>
-              {channel.growthRate > 0 && (
-                <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 px-3 py-2 rounded-xl">
-                  <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
-                  <span className="text-green-700 dark:text-green-400 font-bold text-lg">+{channel.growthRate}%</span>
-                  <span className="text-green-600 dark:text-green-500 text-sm">成長率</span>
-                </div>
-              )}
+              <div className="flex flex-col items-end gap-3 flex-shrink-0">
+                <WatchlistButton channel={channel} variant="full" />
+                {channel.growthRate > 0 && (
+                  <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 px-3 py-2 rounded-xl">
+                    <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    <span className="text-green-700 dark:text-green-400 font-bold text-lg">+{channel.growthRate}%</span>
+                    <span className="text-green-600 dark:text-green-500 text-sm">成長率</span>
+                  </div>
+                )}
             </div>
             <p className="mt-3 text-gray-600 dark:text-gray-400 text-sm leading-relaxed line-clamp-3">
               {channel.description || "説明なし"}
