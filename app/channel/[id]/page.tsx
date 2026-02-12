@@ -182,6 +182,7 @@ export default async function ChannelDetailPage({ params }: { params: Promise<{ 
                     <span className="text-green-600 dark:text-green-500 text-sm">成長率</span>
                   </div>
                 )}
+              </div>
             </div>
             <p className="mt-3 text-gray-600 dark:text-gray-400 text-sm leading-relaxed line-clamp-3">
               {channel.description || "説明なし"}
