@@ -112,22 +112,23 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // === 2. カテゴリ別検索（日替わりで2カテゴリずつ） ===
+    // === 2. カテゴリ別検索（ランダムで8カテゴリ、各50チャンネル） ===
     const jpCategories = CATEGORY_SEARCHES.japan;
     const globalCategories = CATEGORY_SEARCHES.global;
 
-    // 日替わりで2カテゴリを処理（30カテゴリ÷2 = 15日でフルローテーション）
-    const dayIndex = today.getDate() % Math.ceil(jpCategories.length / 2); // 1〜31日を使用
-    const idx1 = (dayIndex * 2) % jpCategories.length;
-    const idx2 = (dayIndex * 2 + 1) % jpCategories.length;
+    // 実行ごとにランダムなカテゴリを選択（同じ日に複数回実行しても異なるカテゴリを取得）
+    const shuffledJp = [...jpCategories].sort(() => Math.random() - 0.5);
+    const shuffledGlobal = [...globalCategories].sort(() => Math.random() - 0.5);
 
-    const todayJpSearches = [jpCategories[idx1], jpCategories[idx2]];
-    const todayGlobalSearches = [globalCategories[idx1], globalCategories[idx2]];
+    // 日本4カテゴリ + グローバル4カテゴリ = 8カテゴリ
+    const todayJpSearches = shuffledJp.slice(0, 4);
+    const todayGlobalSearches = shuffledGlobal.slice(0, 4);
 
     for (const search of [...todayJpSearches, ...todayGlobalSearches]) {
       const isJp = todayJpSearches.includes(search);
       const regionCode = isJp ? "JP" : "US";
-      const searchIds = await searchChannelsByQuery(apiKey, search.query, regionCode, 25);
+      // 各カテゴリで50チャンネル取得
+      const searchIds = await searchChannelsByQuery(apiKey, search.query, regionCode, 50);
 
       if (searchIds.length > 0) {
         const channels = await fetchChannelsByIds(searchIds, apiKey);
