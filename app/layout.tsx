@@ -8,7 +8,7 @@ import TrialBanner from "@/components/TrialBanner";
 import { AuthProvider } from "@/context/AuthContext";
 import { WatchlistProvider } from "@/context/WatchlistContext";
 
-const GA_MEASUREMENT_ID = "G-TNPS3Y7J88";
+const GA_MEASUREMENT_ID = "G-HV84K1GDVB";
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
