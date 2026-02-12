@@ -11,10 +11,15 @@ import {
   TrendingUp,
   ExternalLink,
   Loader2,
+  LayoutGrid,
+  List,
+  Eye,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useWatchlist } from "@/context/WatchlistContext";
 import { Channel } from "@/types";
+
+type ViewMode = "grid" | "list";
 
 interface WatchlistDisplayItem {
   id: string;
@@ -48,6 +53,20 @@ export default function WatchlistContent() {
   const [items, setItems] = useState<WatchlistDisplayItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+
+  // Load viewMode from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("watchlist-view-mode");
+    if (saved === "grid" || saved === "list") {
+      setViewMode(saved);
+    }
+  }, []);
+
+  function handleViewModeChange(mode: ViewMode) {
+    setViewMode(mode);
+    localStorage.setItem("watchlist-view-mode", mode);
+  }
 
   useEffect(() => {
     if (authLoading) return;
@@ -166,20 +185,49 @@ export default function WatchlistContent() {
   // ログイン済み
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center">
-          <Bookmark className="w-5 h-5 text-red-500" />
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center">
+            <Bookmark className="w-5 h-5 text-red-500" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              ウォッチリスト
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              {items.length > 0
+                ? `${items.length}件のチャンネルを追跡中`
+                : "気になるチャンネルを保存して追跡"}
+            </p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            ウォッチリスト
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
-            {items.length > 0
-              ? `${items.length}件のチャンネルを追跡中`
-              : "気になるチャンネルを保存して追跡"}
-          </p>
-        </div>
+        
+        {items.length > 0 && (
+          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+            <button
+              onClick={() => handleViewModeChange("grid")}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === "grid"
+                  ? "bg-white dark:bg-gray-700 text-red-500 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+              }`}
+              title="グリッド表示"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => handleViewModeChange("list")}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === "list"
+                  ? "bg-white dark:bg-gray-700 text-red-500 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+              }`}
+              title="リスト表示"
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
 
       {items.length === 0 ? (
@@ -198,7 +246,8 @@ export default function WatchlistContent() {
             チャンネルを検索
           </Link>
         </div>
-      ) : (
+      ) : viewMode === "grid" ? (
+        /* Grid View */
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {items.map((item) => (
             <div
@@ -273,6 +322,103 @@ export default function WatchlistContent() {
                   )}
                 </div>
               )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* List View */
+        <div className="space-y-2">
+          {items.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md hover:border-red-200 dark:hover:border-red-800 transition-all group"
+            >
+              <div className="flex items-center gap-4">
+                {/* Thumbnail */}
+                <Link href={`/channel/${item.channelId}`} className="flex-shrink-0">
+                  {item.channel?.thumbnailUrl ? (
+                    <Image
+                      src={item.channel.thumbnailUrl}
+                      alt={item.channel.title}
+                      width={48}
+                      height={48}
+                      className="rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700 group-hover:ring-red-200 dark:group-hover:ring-red-800 transition-all"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full" />
+                  )}
+                </Link>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/channel/${item.channelId}`}
+                      className="font-semibold text-gray-900 dark:text-white group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors truncate"
+                    >
+                      {item.channel?.title ?? item.channelId}
+                    </Link>
+                    {item.channel && (
+                      <span className="flex-shrink-0 text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full">
+                        {item.channel.category}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {item.channel && (
+                    <div className="flex items-center gap-4 mt-1 text-sm">
+                      <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
+                        <Users className="w-4 h-4" />
+                        <span>{formatNumber(item.channel.subscriberCount)}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
+                        <Eye className="w-4 h-4" />
+                        <span>{formatNumber(item.channel.viewCount)}</span>
+                      </div>
+                      {item.subscriberChange !== 0 && (
+                        <div
+                          className={`flex items-center gap-1 font-medium ${
+                            item.subscriberChange > 0
+                              ? "text-green-600 dark:text-green-400"
+                              : "text-red-600 dark:text-red-400"
+                          }`}
+                        >
+                          <TrendingUp className="w-4 h-4" />
+                          <span>{formatChange(item.subscriberChange)}</span>
+                        </div>
+                      )}
+                      <span className="text-gray-400 text-xs">
+                        {new Date(item.addedAt).toLocaleDateString("ja-JP")}に追加
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <a
+                    href={`https://www.youtube.com/channel/${item.channelId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    title="YouTubeで見る"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                  <button
+                    onClick={() => handleRemove(item.channelId)}
+                    disabled={removingId === item.channelId}
+                    className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    title="削除"
+                  >
+                    {removingId === item.channelId ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
