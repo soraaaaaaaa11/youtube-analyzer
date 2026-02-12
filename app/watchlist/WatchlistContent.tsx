@@ -199,109 +199,99 @@ export default function WatchlistContent() {
           </Link>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {items.map((item) => (
             <div
               key={item.id}
-              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5 hover:shadow-lg hover:border-red-200 dark:hover:border-red-800 transition-all group"
             >
-              <div className="flex items-center gap-4">
-                {/* Thumbnail */}
-                {item.channel ? (
-                  <Link
-                    href={`/channel/${item.channelId}`}
-                    className="flex-shrink-0"
-                  >
-                    <Image
-                      src={item.channel.thumbnailUrl}
-                      alt={item.channel.title}
-                      width={56}
-                      height={56}
-                      className="rounded-full object-cover"
-                    />
-                  </Link>
+              {/* Header: Actions */}
+              <div className="flex justify-end gap-1 mb-3">
+                <a
+                  href={`https://www.youtube.com/channel/${item.channelId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  title="YouTubeで見る"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+                <button
+                  onClick={() => handleRemove(item.channelId)}
+                  disabled={removingId === item.channelId}
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  title="ウォッチリストから削除"
+                >
+                  {removingId === item.channelId ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+
+              {/* Thumbnail & Name */}
+              <Link href={`/channel/${item.channelId}`} className="block text-center mb-4">
+                {item.channel?.thumbnailUrl ? (
+                  <Image
+                    src={item.channel.thumbnailUrl}
+                    alt={item.channel.title}
+                    width={80}
+                    height={80}
+                    className="rounded-full object-cover mx-auto mb-3 ring-2 ring-gray-100 dark:ring-gray-700 group-hover:ring-red-200 dark:group-hover:ring-red-800 transition-all"
+                  />
                 ) : (
-                  <div className="w-14 h-14 bg-gray-200 dark:bg-gray-700 rounded-full flex-shrink-0" />
+                  <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-full mx-auto mb-3" />
                 )}
+                <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors line-clamp-1">
+                  {item.channel?.title ?? item.channelId}
+                </h3>
+                {item.channel && (
+                  <span className="inline-block text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-1 rounded-full mt-2">
+                    {item.channel.category}
+                  </span>
+                )}
+              </Link>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      {item.channel ? (
-                        <Link
-                          href={`/channel/${item.channelId}`}
-                          className="font-semibold text-gray-900 dark:text-white hover:text-red-500 dark:hover:text-red-400 transition-colors truncate block"
-                        >
-                          {item.channel.title}
-                        </Link>
-                      ) : (
-                        <span className="text-gray-500 text-sm">
-                          {item.channelId}
-                        </span>
-                      )}
-                      {item.channel && (
-                        <span className="inline-block text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full mt-1">
-                          {item.channel.category}
-                        </span>
-                      )}
+              {/* Stats */}
+              {item.channel && (
+                <div className="space-y-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
+                      <Users className="w-4 h-4" />
+                      <span>登録者数</span>
                     </div>
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <a
-                        href={`https://www.youtube.com/channel/${item.channelId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                        title="YouTubeで見る"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                      <button
-                        onClick={() => handleRemove(item.channelId)}
-                        disabled={removingId === item.channelId}
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                        title="ウォッチリストから削除"
-                      >
-                        {removingId === item.channelId ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="w-4 h-4" />
-                        )}
-                      </button>
-                    </div>
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {formatNumber(item.channel.subscriberCount)}
+                    </span>
                   </div>
-
-                  {/* Stats */}
-                  {item.channel && (
-                    <div className="mt-2 flex items-center gap-4 text-sm">
+                  
+                  {item.subscriberChange !== 0 && (
+                    <div className="flex items-center justify-between text-sm">
                       <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
-                        <Users className="w-4 h-4" />
-                        <span>
-                          {formatNumber(item.channel.subscriberCount)}
-                        </span>
+                        <TrendingUp className="w-4 h-4" />
+                        <span>追加後の変化</span>
                       </div>
-                      {item.subscriberChange !== 0 && (
-                        <div
-                          className={`flex items-center gap-1 font-medium ${
-                            item.subscriberChange > 0
-                              ? "text-green-600 dark:text-green-400"
-                              : "text-red-600 dark:text-red-400"
-                          }`}
-                        >
-                          <TrendingUp className="w-4 h-4" />
-                          <span>
-                            {formatChange(item.subscriberChange)}人
-                          </span>
-                        </div>
-                      )}
-                      <span className="text-xs text-gray-400">
-                        {new Date(item.addedAt).toLocaleDateString("ja-JP")}
-                        に追加
+                      <span
+                        className={`font-semibold ${
+                          item.subscriberChange > 0
+                            ? "text-green-600 dark:text-green-400"
+                            : "text-red-600 dark:text-red-400"
+                        }`}
+                      >
+                        {formatChange(item.subscriberChange)}
                       </span>
                     </div>
                   )}
+
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500 dark:text-gray-400">追加日</span>
+                    <span className="text-gray-600 dark:text-gray-300">
+                      {new Date(item.addedAt).toLocaleDateString("ja-JP")}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           ))}
         </div>
