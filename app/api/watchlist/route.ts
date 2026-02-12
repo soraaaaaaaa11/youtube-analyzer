@@ -61,11 +61,11 @@ export async function GET() {
       channel: ch
         ? {
             id: ch.id,
-            title: ch.title,
+            title: ch.name ?? "",
             description: ch.description ?? "",
-            thumbnailUrl: ch.thumbnail_url ?? "",
-            subscriberCount: ch.subscriber_count ?? 0,
-            viewCount: ch.view_count ?? 0,
+            thumbnailUrl: ch.thumbnail ?? "",
+            subscriberCount: ch.subscribers ?? 0,
+            viewCount: ch.total_views ?? 0,
             videoCount: ch.video_count ?? 0,
             publishedAt: ch.published_at ?? "",
             category: ch.category ?? "その他",
@@ -74,10 +74,10 @@ export async function GET() {
           }
         : null,
       subscriberChange: ch
-        ? (ch.subscriber_count as number) - item.subscriber_count_at_add
+        ? (ch.subscribers as number ?? 0) - item.subscriber_count_at_add
         : 0,
       viewCountChange: ch
-        ? (ch.view_count as number) - item.view_count_at_add
+        ? (ch.total_views as number ?? 0) - item.view_count_at_add
         : 0,
     };
   });
@@ -121,11 +121,11 @@ export async function POST(req: NextRequest) {
   await admin.from("channels").upsert(
     {
       id: channelId,
-      title: channelTitle ?? "",
+      name: channelTitle ?? "",
       description: description ?? "",
-      thumbnail_url: thumbnailUrl ?? "",
-      subscriber_count: subscriberCount ?? 0,
-      view_count: viewCount ?? 0,
+      thumbnail: thumbnailUrl ?? "",
+      subscribers: subscriberCount ?? 0,
+      total_views: viewCount ?? 0,
       video_count: videoCount ?? 0,
       published_at: publishedAt || null,
       category: category ?? "その他",
