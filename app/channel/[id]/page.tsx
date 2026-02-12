@@ -5,6 +5,7 @@ import { ArrowLeft, Users, Eye, Video, TrendingUp, Calendar, Clock, ExternalLink
 import StatsCard from "@/components/StatsCard";
 import SubscriberChart from "@/components/SubscriberChart";
 import ChannelCard from "@/components/ChannelCard";
+import WatchlistButton from "@/components/WatchlistButton";
 import { Channel, ChannelStats } from "@/types";
 import { createAdminClient } from "@/lib/supabase-server";
 
@@ -170,6 +171,9 @@ export default async function ChannelDetailPage({ params }: { params: Promise<{ 
                     <ExternalLink className="w-3.5 h-3.5" />
                     YouTubeで見る
                   </a>
+                </div>
+                <div className="mt-3">
+                  <WatchlistButton channel={channel} variant="full" />
                 </div>
               </div>
               {channel.growthRate > 0 && (
