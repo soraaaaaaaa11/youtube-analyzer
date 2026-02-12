@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-server";
+import { fetchTrendingVideos, TrendingVideo } from "@/lib/youtube-api";
 import { Channel } from "@/types";
 
 export const revalidate = 300; // 5分キャッシュ
@@ -75,16 +76,19 @@ export async function GET() {
         .select("id", { count: "exact", head: true }),
     ]);
 
-    // 急上昇 = 日本TOP10（成長率の計算にはhistoryが必要だが、簡易的に最も登録者の多い順で表示）
-    const trendingResult = await admin
-      .from("channels")
-      .select("*")
-      .eq("region", "japan")
-      .order("subscribers", { ascending: false })
-      .limit(10);
+    // 急上昇動画をYouTube APIから取得
+    let trendingVideos: TrendingVideo[] = [];
+    const apiKey = process.env.YOUTUBE_API_KEY;
+    if (apiKey) {
+      try {
+        trendingVideos = await fetchTrendingVideos(apiKey, "JP", 10);
+      } catch (e) {
+        console.error("Trending videos fetch error:", e);
+      }
+    }
 
     return NextResponse.json({
-      trending: (trendingResult.data ?? []).map(dbToChannel),
+      trendingVideos,
       jpTop5: (jpTopResult.data ?? []).map(dbToChannel),
       globalTop5: (globalTopResult.data ?? []).map(dbToChannel),
       categories: {

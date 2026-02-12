@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, TrendingUp, Users, Zap, Shield, Globe, ArrowRight, BarChart3, Eye, Crown, Loader2 } from "lucide-react";
+import { Search, TrendingUp, Users, Zap, Shield, Globe, ArrowRight, BarChart3, Eye, Crown, Loader2, Play, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { Channel, RANKING_CATEGORIES } from "@/types";
 import {
@@ -24,8 +24,31 @@ function formatNumber(num: number): string {
   return num.toLocaleString();
 }
 
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const minutes = Math.floor(diff / (1000 * 60));
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  
+  if (minutes < 60) return `${minutes}分前`;
+  if (hours < 24) return `${hours}時間前`;
+  if (days < 7) return `${days}日前`;
+  return `${Math.floor(days / 7)}週間前`;
+}
+
+interface TrendingVideo {
+  videoId: string;
+  title: string;
+  channelId: string;
+  channelTitle: string;
+  thumbnailUrl: string;
+  viewCount: number;
+  likeCount: number;
+  publishedAt: string;
+}
+
 interface HomepageData {
-  trending: Channel[];
+  trendingVideos: TrendingVideo[];
   jpTop5: Channel[];
   globalTop5: Channel[];
   categories: {
@@ -229,15 +252,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 急上昇チャンネル（横スクロール） */}
+      {/* 急上昇動画 TOP10（横スクロール） */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <FadeIn>
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
               <TrendingUp className="w-6 h-6 text-red-500" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">注目チャンネル TOP10</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">🔥 急上昇動画 TOP10</h2>
             </div>
-            <Link href="/rankings?tab=subscribers" className="text-sm text-red-500 hover:text-red-600 font-medium flex items-center gap-1">
+            <Link href="/rankings?tab=trending" className="text-sm text-red-500 hover:text-red-600 font-medium flex items-center gap-1">
               もっと見る <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -250,36 +273,56 @@ export default function HomePage() {
         ) : (
           <div className="overflow-x-auto pb-4 -mx-4 px-4">
             <StaggerContainer className="flex gap-4" staggerDelay={0.08}>
-              {(data?.trending ?? []).map((channel, index) => (
-                <StaggerItem key={channel.id}>
-                  <Link
-                    href={`/channel/${channel.id}`}
-                    className="block bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg transition-all hover:-translate-y-1 group w-48 flex-shrink-0"
+              {(data?.trendingVideos ?? []).map((video, index) => (
+                <StaggerItem key={video.videoId}>
+                  <a
+                    href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all hover:-translate-y-1 group w-56 flex-shrink-0 overflow-hidden"
                   >
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className={`text-2xl font-bold ${
-                        index === 0 ? "text-yellow-500" : index === 1 ? "text-gray-400" : index === 2 ? "text-amber-600" : "text-gray-200 dark:text-gray-700"
+                    {/* サムネイル */}
+                    <div className="relative aspect-video bg-gray-200 dark:bg-gray-700">
+                      <Image
+                        src={video.thumbnailUrl || "/placeholder.png"}
+                        alt={video.title}
+                        fill
+                        className="object-cover"
+                      />
+                      {/* ランク表示 */}
+                      <div className={`absolute top-2 left-2 w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${
+                        index === 0 ? "bg-yellow-500 text-white" : 
+                        index === 1 ? "bg-gray-400 text-white" : 
+                        index === 2 ? "bg-amber-600 text-white" : 
+                        "bg-black/70 text-white"
                       }`}>
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
+                        {index + 1}
+                      </div>
+                      {/* 再生アイコン */}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Play className="w-10 h-10 text-white" fill="white" />
+                      </div>
                     </div>
-                    <Image
-                      src={channel.thumbnailUrl || "/placeholder.png"}
-                      alt={channel.title}
-                      width={48}
-                      height={48}
-                      className="rounded-full mb-3"
-                    />
-                    <h3 className="font-semibold text-sm text-gray-900 dark:text-white group-hover:text-red-500 transition-colors line-clamp-2">
-                      {channel.title}
-                    </h3>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                      {formatNumber(channel.subscriberCount)}人
+                    {/* コンテンツ */}
+                    <div className="p-3">
+                      <h3 className="font-semibold text-sm text-gray-900 dark:text-white group-hover:text-red-500 transition-colors line-clamp-2 leading-tight">
+                        {video.title}
+                      </h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 truncate">
+                        {video.channelTitle}
+                      </p>
+                      <div className="flex items-center gap-3 mt-2 text-xs text-gray-500 dark:text-gray-400">
+                        <span className="flex items-center gap-1">
+                          <Eye className="w-3 h-3" />
+                          {formatNumber(video.viewCount)}回
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {timeAgo(video.publishedAt)}
+                        </span>
+                      </div>
                     </div>
-                    <span className="inline-block mt-2 text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full">
-                      {channel.category}
-                    </span>
-                  </Link>
+                  </a>
                 </StaggerItem>
               ))}
             </StaggerContainer>
