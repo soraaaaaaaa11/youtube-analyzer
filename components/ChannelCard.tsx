@@ -125,7 +125,7 @@ export default function ChannelCard({ channel }: ChannelCardProps) {
             </div>
             <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
               <Calendar className="w-4 h-4 flex-shrink-0" />
-              <span>{channel.publishedAt.slice(0, 7)}</span>
+              <span>{channel.publishedAt ? channel.publishedAt.slice(0, 7) : "-"}</span>
             </div>
           </div>
         </div>
