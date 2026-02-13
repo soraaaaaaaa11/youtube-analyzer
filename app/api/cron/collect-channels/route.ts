@@ -112,17 +112,29 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // === 2. カテゴリ別検索（全30カテゴリ × 2リージョン = 最大3000チャンネル） ===
+    // === 2. カテゴリ別検索（バッチ処理: 15カテゴリ/回 × 4回/日） ===
     const jpCategories = CATEGORY_SEARCHES.japan;
     const globalCategories = CATEGORY_SEARCHES.global;
 
-    // 全カテゴリを処理（APIクォータ: 60リクエスト × 100 = 6000ユニット + channels取得で約9000ユニット）
+    // バッチ番号を取得（0-3）: クエリパラメータ or 時間ベースで自動判定
+    const url = new URL(req.url);
+    let batch = parseInt(url.searchParams.get("batch") ?? "-1", 10);
+    if (batch < 0 || batch > 3) {
+      // 時間ベースで自動判定（0-5時=0, 6-11時=1, 12-17時=2, 18-23時=3）
+      const hour = new Date().getUTCHours();
+      batch = Math.floor(hour / 6);
+    }
+
+    // 全60カテゴリを4バッチに分割（各15カテゴリ）
     const allSearches = [
       ...jpCategories.map(s => ({ ...s, regionCode: "JP" as const })),
       ...globalCategories.map(s => ({ ...s, regionCode: "US" as const })),
     ];
+    const batchSize = 15;
+    const startIdx = batch * batchSize;
+    const batchSearches = allSearches.slice(startIdx, startIdx + batchSize);
 
-    for (const search of allSearches) {
+    for (const search of batchSearches) {
       try {
         // 各カテゴリで50チャンネル取得
         const searchIds = await searchChannelsByQuery(apiKey, search.query, search.regionCode, 50);
@@ -136,7 +148,6 @@ export async function GET(req: NextRequest) {
           }
         }
       } catch (e) {
-        // APIクォータ超過時は残りをスキップして結果を返す
         console.error(`Category search failed: ${search.query}`, e);
         break;
       }
@@ -145,9 +156,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       collected: totalCollected,
+      batch,
       sources: {
         trending: allTrendingIds.length,
-        categories: allSearches.length,
+        categories: batchSearches.map(s => s.query),
       },
     });
   } catch (e) {
