@@ -16,12 +16,15 @@ import {
   Eye,
   Download,
   Calendar,
+  ArrowUpDown,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useWatchlist } from "@/context/WatchlistContext";
 import { Channel } from "@/types";
 
 type ViewMode = "grid" | "list";
+type SortField = "addedAt" | "publishedAt" | "viewCount" | "subscriberCount";
+type SortOrder = "asc" | "desc";
 
 interface WatchlistDisplayItem {
   id: string;
@@ -59,19 +62,68 @@ export default function WatchlistContent() {
   const [loading, setLoading] = useState(true);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [sortField, setSortField] = useState<SortField>("addedAt");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
-  // Load viewMode from localStorage
+  // Load viewMode and sort settings from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("watchlist-view-mode");
-    if (saved === "grid" || saved === "list") {
-      setViewMode(saved);
+    const savedView = localStorage.getItem("watchlist-view-mode");
+    if (savedView === "grid" || savedView === "list") {
+      setViewMode(savedView);
     }
+    const savedSort = localStorage.getItem("watchlist-sort-field");
+    if (savedSort) setSortField(savedSort as SortField);
+    const savedOrder = localStorage.getItem("watchlist-sort-order");
+    if (savedOrder === "asc" || savedOrder === "desc") setSortOrder(savedOrder);
   }, []);
 
   function handleViewModeChange(mode: ViewMode) {
     setViewMode(mode);
     localStorage.setItem("watchlist-view-mode", mode);
   }
+
+  function handleSort(field: SortField) {
+    if (sortField === field) {
+      const newOrder = sortOrder === "desc" ? "asc" : "desc";
+      setSortOrder(newOrder);
+      localStorage.setItem("watchlist-sort-order", newOrder);
+    } else {
+      setSortField(field);
+      setSortOrder("desc");
+      localStorage.setItem("watchlist-sort-field", field);
+      localStorage.setItem("watchlist-sort-order", "desc");
+    }
+  }
+
+  // Sort items
+  const sortedItems = [...items].sort((a, b) => {
+    let aVal: number | string = 0;
+    let bVal: number | string = 0;
+    
+    switch (sortField) {
+      case "addedAt":
+        aVal = new Date(a.addedAt).getTime();
+        bVal = new Date(b.addedAt).getTime();
+        break;
+      case "publishedAt":
+        aVal = a.channel?.publishedAt ? new Date(a.channel.publishedAt).getTime() : 0;
+        bVal = b.channel?.publishedAt ? new Date(b.channel.publishedAt).getTime() : 0;
+        break;
+      case "viewCount":
+        aVal = a.channel?.viewCount ?? 0;
+        bVal = b.channel?.viewCount ?? 0;
+        break;
+      case "subscriberCount":
+        aVal = a.channel?.subscriberCount ?? 0;
+        bVal = b.channel?.subscriberCount ?? 0;
+        break;
+    }
+    
+    if (typeof aVal === "number" && typeof bVal === "number") {
+      return sortOrder === "desc" ? bVal - aVal : aVal - bVal;
+    }
+    return 0;
+  });
 
   useEffect(() => {
     if (authLoading) return;
@@ -208,7 +260,33 @@ export default function WatchlistContent() {
         </div>
         
         {items.length > 0 && (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* Sort Buttons */}
+            <div className="flex items-center gap-1.5">
+              <ArrowUpDown className="w-4 h-4 text-gray-400" />
+              <div className="flex gap-1">
+                {[
+                  { label: "追加順", field: "addedAt" as SortField },
+                  { label: "開設日", field: "publishedAt" as SortField },
+                  { label: "再生数", field: "viewCount" as SortField },
+                  { label: "登録者", field: "subscriberCount" as SortField },
+                ].map((btn) => (
+                  <button
+                    key={btn.field}
+                    onClick={() => handleSort(btn.field)}
+                    className={`px-2 py-1 text-xs rounded-md transition-colors ${
+                      sortField === btn.field
+                        ? "bg-red-500 text-white"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                    }`}
+                  >
+                    {btn.label}
+                    {sortField === btn.field && (sortOrder === "desc" ? " ↓" : " ↑")}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* CSV Export Button */}
             <a
               href="/api/export/watchlist"
@@ -267,7 +345,7 @@ export default function WatchlistContent() {
       ) : viewMode === "grid" ? (
         /* Grid View */
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {items.map((item) => (
+          {sortedItems.map((item) => (
             <div
               key={item.id}
               className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-3 hover:shadow-md hover:border-red-200 dark:hover:border-red-800 transition-all group relative"
@@ -322,21 +400,29 @@ export default function WatchlistContent() {
 
               {/* Stats - Compact */}
               {item.channel && (
-                <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700 flex items-center justify-center gap-2 text-xs">
-                  <div className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
-                    <Users className="w-3 h-3" />
-                    <span>{formatNumber(item.channel.subscriberCount)}</span>
+                <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700 space-y-1">
+                  <div className="flex items-center justify-center gap-2 text-xs">
+                    <div className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
+                      <Users className="w-3 h-3" />
+                      <span>{formatNumber(item.channel.subscriberCount)}</span>
+                    </div>
+                    {item.subscriberChange !== 0 && (
+                      <span
+                        className={`font-medium ${
+                          item.subscriberChange > 0
+                            ? "text-green-600 dark:text-green-400"
+                            : "text-red-600 dark:text-red-400"
+                        }`}
+                      >
+                        {formatChange(item.subscriberChange)}
+                      </span>
+                    )}
                   </div>
-                  {item.subscriberChange !== 0 && (
-                    <span
-                      className={`font-medium ${
-                        item.subscriberChange > 0
-                          ? "text-green-600 dark:text-green-400"
-                          : "text-red-600 dark:text-red-400"
-                      }`}
-                    >
-                      {formatChange(item.subscriberChange)}
-                    </span>
+                  {item.channel.publishedAt && (
+                    <div className="flex items-center justify-center gap-1 text-xs text-gray-400">
+                      <Calendar className="w-3 h-3" />
+                      <span>{item.channel.publishedAt.slice(0, 7)}</span>
+                    </div>
                   )}
                 </div>
               )}
@@ -346,7 +432,7 @@ export default function WatchlistContent() {
       ) : (
         /* List View */
         <div className="space-y-2">
-          {items.map((item) => (
+          {sortedItems.map((item) => (
             <div
               key={item.id}
               className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md hover:border-red-200 dark:hover:border-red-800 transition-all group"
