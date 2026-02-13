@@ -229,7 +229,7 @@ async function searchChannelsDB(admin: any, filters: SearchFilters): Promise<Cha
   return data.map((row: {
     id: string; name: string; description: string; thumbnail: string;
     subscribers: number; total_views: number; video_count: number;
-    category: string; region: string; updated_at: string;
+    category: string; region: string; updated_at: string; published_at?: string;
   }) => ({
     id: row.id,
     title: row.name,
@@ -238,7 +238,7 @@ async function searchChannelsDB(admin: any, filters: SearchFilters): Promise<Cha
     subscriberCount: row.subscribers,
     viewCount: row.total_views,
     videoCount: row.video_count,
-    publishedAt: "",
+    publishedAt: row.published_at?.split("T")[0] ?? "",
     category: row.category ?? "その他",
     growthRate: 0,
     updatedAt: row.updated_at?.split("T")[0] ?? "",

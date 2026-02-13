@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
 
     if (error) {
       console.error("DB query error:", error);
-      return NextResponse.json({ error: "DB query failed" }, { status: 500 });
+      return NextResponse.json({ error: "DB query failed", details: error.message }, { status: 500 });
     }
 
     if (!channels || channels.length === 0) {

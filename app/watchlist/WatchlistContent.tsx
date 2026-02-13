@@ -15,6 +15,7 @@ import {
   List,
   Eye,
   Download,
+  Calendar,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useWatchlist } from "@/context/WatchlistContext";
@@ -402,6 +403,12 @@ export default function WatchlistContent() {
                         >
                           <TrendingUp className="w-4 h-4" />
                           <span>{formatChange(item.subscriberChange)}</span>
+                        </div>
+                      )}
+                      {item.channel.publishedAt && (
+                        <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                          <Calendar className="w-4 h-4" />
+                          <span>{item.channel.publishedAt.slice(0, 7)}</span>
                         </div>
                       )}
                       <span className="text-gray-400 text-xs">
