@@ -109,7 +109,7 @@ export async function GET() {
 function dbToChannel(row: {
   id: string; name: string; description: string; thumbnail: string;
   subscribers: number; total_views: number; video_count: number;
-  category: string; region: string; updated_at: string;
+  category: string; region: string; updated_at: string; published_at?: string;
 }): Channel {
   return {
     id: row.id,
@@ -119,7 +119,7 @@ function dbToChannel(row: {
     subscriberCount: row.subscribers,
     viewCount: row.total_views,
     videoCount: row.video_count,
-    publishedAt: "",
+    publishedAt: row.published_at?.split("T")[0] ?? "",
     category: row.category ?? "エンタメ",
     growthRate: 0,
     updatedAt: row.updated_at?.split("T")[0] ?? "",
