@@ -22,30 +22,32 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Pro plan required" }, { status: 403 });
   }
 
-  // ウォッチリストのチャンネル取得
-  const { data: watchlist, error: watchlistError } = await supabase
+  // ウォッチリストのチャンネルID取得
+  const { data: watchlistItems, error: watchlistError } = await supabase
     .from("watchlist")
-    .select(`
-      channel_id,
-      added_at,
-      channels (
-        id,
-        name,
-        description,
-        thumbnail,
-        subscribers,
-        total_views,
-        video_count,
-        category,
-        region
-      )
-    `)
+    .select("channel_id, added_at")
     .eq("user_id", user.id)
     .order("added_at", { ascending: false });
 
-  if (watchlistError) {
+  if (watchlistError || !watchlistItems) {
     return NextResponse.json({ error: "Failed to fetch watchlist" }, { status: 500 });
   }
+
+  // チャンネル詳細を取得
+  const channelIds = watchlistItems.map(item => item.channel_id);
+  const { data: channels } = await supabase
+    .from("channels")
+    .select("id, name, subscribers, total_views, video_count, category, region")
+    .in("id", channelIds);
+
+  // チャンネル情報をマップ化
+  const channelMap = new Map((channels ?? []).map(ch => [ch.id, ch]));
+
+  // ウォッチリストとチャンネル情報を結合
+  const watchlist = watchlistItems.map(item => ({
+    ...item,
+    channel: channelMap.get(item.channel_id) ?? null,
+  }));
 
   // 数字を日本語表記にフォーマット
   function formatJapanese(num: number): string {
@@ -73,17 +75,17 @@ export async function GET(req: NextRequest) {
     "ウォッチリスト追加日"
   ];
 
-  const rows = (watchlist ?? []).map(item => {
-    const ch = item.channels as any;
+  const rows = watchlist.map(item => {
+    const ch = item.channel;
     return [
-      ch?.id ?? "",
+      ch?.id ?? item.channel_id,
       `"${(ch?.name ?? "").replace(/"/g, '""')}"`,
       formatJapanese(ch?.subscribers ?? 0),
       formatJapanese(ch?.total_views ?? 0),
       ch?.video_count ?? 0,
       ch?.category ?? "",
       ch?.region ?? "",
-      ch?.id ? `https://www.youtube.com/channel/${ch.id}` : "",
+      `https://www.youtube.com/channel/${ch?.id ?? item.channel_id}`,
       item.added_at ? new Date(item.added_at).toLocaleDateString("ja-JP") : "",
     ];
   });
