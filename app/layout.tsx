@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   description: "急成長YouTubeチャンネルを一瞬で発見。柔軟な条件検索で、あなたの次のビジネスチャンスを見つけよう。",
   keywords: ["YouTube", "分析", "チャンネル検索", "急成長", "トレンド", "YouTuber", "リサーチ"],
   authors: [{ name: "YouTube分析ツール" }],
+  verification: {
+    google: "lD6fRG0-7cecoXK_MJMqdOI_dBue46uSEKnmwXeWYpI",
+  },
   openGraph: {
     title: "YouTube分析ツール | 急成長チャンネルを発見",
     description: "急成長YouTubeチャンネルを一瞬で発見。柔軟な条件検索で、あなたの次のビジネスチャンスを見つけよう。",
