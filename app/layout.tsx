@@ -19,6 +19,25 @@ const notoSansJP = Noto_Sans_JP({
 export const metadata: Metadata = {
   title: "YouTube分析ツール | 急成長チャンネルを発見",
   description: "急成長YouTubeチャンネルを一瞬で発見。柔軟な条件検索で、あなたの次のビジネスチャンスを見つけよう。",
+  keywords: ["YouTube", "分析", "チャンネル検索", "急成長", "トレンド", "YouTuber", "リサーチ"],
+  authors: [{ name: "YouTube分析ツール" }],
+  openGraph: {
+    title: "YouTube分析ツール | 急成長チャンネルを発見",
+    description: "急成長YouTubeチャンネルを一瞬で発見。柔軟な条件検索で、あなたの次のビジネスチャンスを見つけよう。",
+    url: "https://youtube-analyzer-pied.vercel.app",
+    siteName: "YouTube分析ツール",
+    locale: "ja_JP",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "YouTube分析ツール | 急成長チャンネルを発見",
+    description: "急成長YouTubeチャンネルを一瞬で発見。柔軟な条件検索で、あなたの次のビジネスチャンスを見つけよう。",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

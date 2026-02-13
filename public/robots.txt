@@ -1,0 +1,6 @@
+# robots.txt for YouTube分析ツール
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://youtube-analyzer-pied.vercel.app/sitemap.xml
