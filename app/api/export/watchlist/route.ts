@@ -4,6 +4,11 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 export async function GET(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   
+  // ソートパラメータ取得
+  const { searchParams } = req.nextUrl;
+  const sortField = searchParams.get("sortField") ?? "addedAt";
+  const sortOrder = searchParams.get("sortOrder") ?? "desc";
+  
   // ユーザー認証確認
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) {
@@ -48,6 +53,35 @@ export async function GET(req: NextRequest) {
     ...item,
     channel: channelMap.get(item.channel_id) ?? null,
   }));
+
+  // ソート
+  watchlist.sort((a, b) => {
+    const chA = a.channel as any;
+    const chB = b.channel as any;
+    let aVal: number = 0;
+    let bVal: number = 0;
+    
+    switch (sortField) {
+      case "addedAt":
+        aVal = new Date(a.added_at).getTime();
+        bVal = new Date(b.added_at).getTime();
+        break;
+      case "publishedAt":
+        aVal = chA?.published_at ? new Date(chA.published_at).getTime() : 0;
+        bVal = chB?.published_at ? new Date(chB.published_at).getTime() : 0;
+        break;
+      case "viewCount":
+        aVal = chA?.total_views ?? 0;
+        bVal = chB?.total_views ?? 0;
+        break;
+      case "subscriberCount":
+        aVal = chA?.subscribers ?? 0;
+        bVal = chB?.subscribers ?? 0;
+        break;
+    }
+    
+    return sortOrder === "desc" ? bVal - aVal : aVal - bVal;
+  });
 
   // 数字を日本語表記にフォーマット
   function formatJapanese(num: number): string {
