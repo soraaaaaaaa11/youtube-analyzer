@@ -47,6 +47,19 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Failed to fetch watchlist" }, { status: 500 });
   }
 
+  // 数字を日本語表記にフォーマット
+  function formatJapanese(num: number): string {
+    if (num >= 100000000) {
+      const oku = Math.floor(num / 100000000);
+      const man = Math.floor((num % 100000000) / 10000);
+      return man > 0 ? `${oku}億${man}万` : `${oku}億`;
+    }
+    if (num >= 10000) {
+      return `${Math.floor(num / 10000)}万`;
+    }
+    return num.toLocaleString();
+  }
+
   // CSV生成
   const headers = [
     "チャンネルID",
@@ -65,8 +78,8 @@ export async function GET(req: NextRequest) {
     return [
       ch?.id ?? "",
       `"${(ch?.name ?? "").replace(/"/g, '""')}"`,
-      ch?.subscribers ?? 0,
-      ch?.total_views ?? 0,
+      formatJapanese(ch?.subscribers ?? 0),
+      formatJapanese(ch?.total_views ?? 0),
       ch?.video_count ?? 0,
       ch?.category ?? "",
       ch?.region ?? "",
