@@ -14,6 +14,7 @@ import {
   LayoutGrid,
   List,
   Eye,
+  Download,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useWatchlist } from "@/context/WatchlistContext";
@@ -206,29 +207,42 @@ export default function WatchlistContent() {
         </div>
         
         {items.length > 0 && (
-          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-            <button
-              onClick={() => handleViewModeChange("grid")}
-              className={`p-2 rounded-md transition-colors ${
-                viewMode === "grid"
-                  ? "bg-white dark:bg-gray-700 text-red-500 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-              }`}
-              title="グリッド表示"
+          <div className="flex items-center gap-3">
+            {/* CSV Export Button */}
+            <a
+              href="/api/export/watchlist"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+              title="CSVでエクスポート"
             >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handleViewModeChange("list")}
-              className={`p-2 rounded-md transition-colors ${
-                viewMode === "list"
-                  ? "bg-white dark:bg-gray-700 text-red-500 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-              }`}
-              title="リスト表示"
-            >
-              <List className="w-4 h-4" />
-            </button>
+              <Download className="w-4 h-4" />
+              CSV
+            </a>
+            
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+              <button
+                onClick={() => handleViewModeChange("grid")}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-white dark:bg-gray-700 text-red-500 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                }`}
+                title="グリッド表示"
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleViewModeChange("list")}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === "list"
+                    ? "bg-white dark:bg-gray-700 text-red-500 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                }`}
+                title="リスト表示"
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         )}
       </div>

@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
   // ユーザープロファイル取得（プラン確認）
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("users")
     .select("plan")
     .eq("id", user.id)
     .single();
