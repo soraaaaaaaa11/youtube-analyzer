@@ -76,7 +76,7 @@ export default function SignupPage() {
             </span>
           </div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">14日間無料で始める</h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">クレジットカード不要</p>
+          
         </div>
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">

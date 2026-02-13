@@ -562,7 +562,7 @@ export default function HomePage() {
             <div className="relative">
               <h2 className="text-3xl font-bold mb-4">今すぐ無料で始めよう</h2>
               <p className="text-red-100 mb-8 text-lg">
-                クレジットカード不要。14日間の無料トライアルで全機能を試せます。
+                14日間の無料トライアルで全機能を試せます。
               </p>
               <Link
                 href="/signup"
