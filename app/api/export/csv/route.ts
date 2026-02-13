@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
   // チャンネルデータ取得
   let query = supabase
     .from("channels")
-    .select("id, name, description, thumbnail, subscribers, total_views, video_count, category, region, updated_at")
+    .select("id, name, description, thumbnail, subscribers, total_views, video_count, category, region, published_at, updated_at")
     .order("subscribers", { ascending: false })
     .limit(limit);
 
@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
   }
 
   // CSV生成
-  const headers = ["チャンネルID", "チャンネル名", "登録者数", "総再生回数", "動画数", "カテゴリ", "地域", "チャンネルURL"];
+  const headers = ["チャンネルID", "チャンネル名", "登録者数", "総再生回数", "動画数", "カテゴリ", "地域", "開設日", "チャンネルURL"];
   const rows = (channels ?? []).map(ch => [
     ch.id,
     `"${(ch.name ?? "").replace(/"/g, '""')}"`,
@@ -79,6 +79,7 @@ export async function GET(req: NextRequest) {
     ch.video_count ?? 0,
     ch.category ?? "",
     ch.region ?? "",
+    ch.published_at ? new Date(ch.published_at).toLocaleDateString("ja-JP") : "",
     `https://www.youtube.com/channel/${ch.id}`,
   ]);
 

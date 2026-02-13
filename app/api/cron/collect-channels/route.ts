@@ -176,6 +176,9 @@ async function upsertChannel(admin: any, ch: any, region: string, categoryOverri
   // カテゴリの決定: 指定があればそれを使い、なければtopicDetailsから推定
   const category = categoryOverride ?? topicToCategory(ch.topicDetails?.topicCategories);
 
+  // チャンネル開設日
+  const publishedAt = ch.snippet.publishedAt ?? null;
+
   await admin.from("channels").upsert({
     id: ch.id,
     name: ch.snippet.title,
@@ -187,6 +190,7 @@ async function upsertChannel(admin: any, ch: any, region: string, categoryOverri
     subscribers: subs,
     total_views: views,
     video_count: videos,
+    published_at: publishedAt,
     updated_at: new Date().toISOString(),
   }, { onConflict: "id" });
 }

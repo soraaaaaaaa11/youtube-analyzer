@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
   const channelIds = watchlistItems.map(item => item.channel_id);
   const { data: channels } = await supabase
     .from("channels")
-    .select("id, name, subscribers, total_views, video_count, category, region")
+    .select("id, name, subscribers, total_views, video_count, category, region, published_at")
     .in("id", channelIds);
 
   // チャンネル情報をマップ化
@@ -71,12 +71,13 @@ export async function GET(req: NextRequest) {
     "動画数",
     "カテゴリ",
     "地域",
+    "開設日",
     "チャンネルURL",
     "ウォッチリスト追加日"
   ];
 
   const rows = watchlist.map(item => {
-    const ch = item.channel;
+    const ch = item.channel as any;
     return [
       ch?.id ?? item.channel_id,
       `"${(ch?.name ?? "").replace(/"/g, '""')}"`,
@@ -85,6 +86,7 @@ export async function GET(req: NextRequest) {
       ch?.video_count ?? 0,
       ch?.category ?? "",
       ch?.region ?? "",
+      ch?.published_at ? new Date(ch.published_at).toLocaleDateString("ja-JP") : "",
       `https://www.youtube.com/channel/${ch?.id ?? item.channel_id}`,
       item.added_at ? new Date(item.added_at).toLocaleDateString("ja-JP") : "",
     ];
