@@ -74,7 +74,9 @@ export async function GET(req: NextRequest) {
       ok: true,
       processed: channels.length,
       updated,
-      remaining: remaining ?? 0
+      remaining: remaining ?? 0,
+      youtubeReturned: youtubeChannels.length,
+      sampleIds: channelIds.slice(0, 3),
     });
   } catch (e) {
     console.error("Update published_at error:", e);
