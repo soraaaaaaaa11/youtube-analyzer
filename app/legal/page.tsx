@@ -37,9 +37,8 @@ export default function LegalPage() {
             販売価格
           </h2>
           <ul className="list-disc list-inside space-y-1">
-            <li>Starterプラン: 月額480円（税込）</li>
+            <li>Freeプラン: 無料（月額0円）</li>
             <li>Proプラン: 月額980円（税込）</li>
-            <li>Businessプラン: 月額2,980円（税込）</li>
           </ul>
         </section>
 
@@ -96,7 +95,7 @@ export default function LegalPage() {
       </div>
 
       <p className="mt-12 text-sm text-gray-500 dark:text-gray-400">
-        最終更新日: 2026年2月12日
+        最終更新日: 2026年2月13日
       </p>
     </div>
   );

@@ -112,32 +112,33 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // === 2. カテゴリ別検索（ランダムで8カテゴリ、各50チャンネル） ===
+    // === 2. カテゴリ別検索（全30カテゴリ × 2リージョン = 最大3000チャンネル） ===
     const jpCategories = CATEGORY_SEARCHES.japan;
     const globalCategories = CATEGORY_SEARCHES.global;
 
-    // 実行ごとにランダムなカテゴリを選択（同じ日に複数回実行しても異なるカテゴリを取得）
-    const shuffledJp = [...jpCategories].sort(() => Math.random() - 0.5);
-    const shuffledGlobal = [...globalCategories].sort(() => Math.random() - 0.5);
+    // 全カテゴリを処理（APIクォータ: 60リクエスト × 100 = 6000ユニット + channels取得で約9000ユニット）
+    const allSearches = [
+      ...jpCategories.map(s => ({ ...s, regionCode: "JP" as const })),
+      ...globalCategories.map(s => ({ ...s, regionCode: "US" as const })),
+    ];
 
-    // 日本4カテゴリ + グローバル4カテゴリ = 8カテゴリ
-    const todayJpSearches = shuffledJp.slice(0, 4);
-    const todayGlobalSearches = shuffledGlobal.slice(0, 4);
+    for (const search of allSearches) {
+      try {
+        // 各カテゴリで50チャンネル取得
+        const searchIds = await searchChannelsByQuery(apiKey, search.query, search.regionCode, 50);
 
-    for (const search of [...todayJpSearches, ...todayGlobalSearches]) {
-      const isJp = todayJpSearches.includes(search);
-      const regionCode = isJp ? "JP" : "US";
-      // 各カテゴリで50チャンネル取得
-      const searchIds = await searchChannelsByQuery(apiKey, search.query, regionCode, 50);
-
-      if (searchIds.length > 0) {
-        const channels = await fetchChannelsByIds(searchIds, apiKey);
-        for (const ch of channels) {
-          const region = detectRegion(ch.snippet.country);
-          // カテゴリを検索クエリから決定
-          await upsertChannel(admin, ch, region, search.categoryName);
-          totalCollected++;
+        if (searchIds.length > 0) {
+          const channels = await fetchChannelsByIds(searchIds, apiKey);
+          for (const ch of channels) {
+            const region = detectRegion(ch.snippet.country);
+            await upsertChannel(admin, ch, region, search.categoryName);
+            totalCollected++;
+          }
         }
+      } catch (e) {
+        // APIクォータ超過時は残りをスキップして結果を返す
+        console.error(`Category search failed: ${search.query}`, e);
+        break;
       }
     }
 
@@ -146,8 +147,7 @@ export async function GET(req: NextRequest) {
       collected: totalCollected,
       sources: {
         trending: allTrendingIds.length,
-        jpSearches: todayJpSearches.map(s => s.query),
-        globalSearches: todayGlobalSearches.map(s => s.query),
+        categories: allSearches.length,
       },
     });
   } catch (e) {
