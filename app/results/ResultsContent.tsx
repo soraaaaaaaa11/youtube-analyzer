@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpDown, Loader2, AlertTriangle } from "lucide-react";
+import { ArrowLeft, ArrowUpDown, Loader2, AlertTriangle, Download } from "lucide-react";
 import { useEffect, useState } from "react";
 import ChannelCard from "@/components/ChannelCard";
 import { Channel, SortField, SortOrder, PLAN_LIMITS, PlanType } from "@/types";
@@ -131,28 +131,41 @@ export default function ResultsContent() {
               </div>
             </div>
 
-            {/* Sort */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                <ArrowUpDown className="w-4 h-4" />
-                並び替え:
-              </span>
-              <div className="flex gap-1">
-                {sortButtons.map((btn) => (
-                  <button
-                    key={btn.field}
-                    onClick={() => handleSort(btn.field)}
-                    className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                      sortField === btn.field
-                        ? "bg-red-500 text-white"
-                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                    }`}
-                  >
-                    {btn.label}
-                    {sortField === btn.field && (sortOrder === "desc" ? " ↓" : " ↑")}
-                  </button>
-                ))}
+            {/* Sort & Export */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                  <ArrowUpDown className="w-4 h-4" />
+                  並び替え:
+                </span>
+                <div className="flex gap-1">
+                  {sortButtons.map((btn) => (
+                    <button
+                      key={btn.field}
+                      onClick={() => handleSort(btn.field)}
+                      className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                        sortField === btn.field
+                          ? "bg-red-500 text-white"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                      }`}
+                    >
+                      {btn.label}
+                      {sortField === btn.field && (sortOrder === "desc" ? " ↓" : " ↑")}
+                    </button>
+                  ))}
+                </div>
               </div>
+
+              {/* CSV Export (Pro only) */}
+              {searchInfo?.plan === "pro" && sorted.length > 0 && (
+                <a
+                  href={`/api/export/csv?${searchParams.toString()}`}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  CSV
+                </a>
+              )}
             </div>
           </div>
 
