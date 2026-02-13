@@ -6,15 +6,47 @@
     },
     {
       "path": "/api/cron/collect-channels?batch=1",
-      "schedule": "0 6 * * *"
+      "schedule": "0 2 * * *"
     },
     {
       "path": "/api/cron/collect-channels?batch=2",
-      "schedule": "0 12 * * *"
+      "schedule": "0 4 * * *"
     },
     {
       "path": "/api/cron/collect-channels?batch=3",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/collect-channels?batch=4",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/collect-channels?batch=5",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/collect-channels?batch=6",
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron/collect-channels?batch=7",
+      "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron/collect-channels?batch=8",
+      "schedule": "0 16 * * *"
+    },
+    {
+      "path": "/api/cron/collect-channels?batch=9",
       "schedule": "0 18 * * *"
+    },
+    {
+      "path": "/api/cron/collect-channels?batch=10",
+      "schedule": "0 20 * * *"
+    },
+    {
+      "path": "/api/cron/collect-channels?batch=11",
+      "schedule": "0 22 * * *"
     },
     {
       "path": "/api/cron/update-stats",

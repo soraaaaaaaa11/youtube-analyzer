@@ -112,25 +112,25 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // === 2. カテゴリ別検索（バッチ処理: 15カテゴリ/回 × 4回/日） ===
+    // === 2. カテゴリ別検索（バッチ処理: 5カテゴリ/回 × 12回/日） ===
     const jpCategories = CATEGORY_SEARCHES.japan;
     const globalCategories = CATEGORY_SEARCHES.global;
 
-    // バッチ番号を取得（0-3）: クエリパラメータ or 時間ベースで自動判定
+    // バッチ番号を取得（0-11）: クエリパラメータ or 時間ベースで自動判定
     const url = new URL(req.url);
     let batch = parseInt(url.searchParams.get("batch") ?? "-1", 10);
-    if (batch < 0 || batch > 3) {
-      // 時間ベースで自動判定（0-5時=0, 6-11時=1, 12-17時=2, 18-23時=3）
+    if (batch < 0 || batch > 11) {
+      // 時間ベースで自動判定（2時間おき）
       const hour = new Date().getUTCHours();
-      batch = Math.floor(hour / 6);
+      batch = Math.floor(hour / 2);
     }
 
-    // 全60カテゴリを4バッチに分割（各15カテゴリ）
+    // 全60カテゴリを12バッチに分割（各5カテゴリ）
     const allSearches = [
       ...jpCategories.map(s => ({ ...s, regionCode: "JP" as const })),
       ...globalCategories.map(s => ({ ...s, regionCode: "US" as const })),
     ];
-    const batchSize = 15;
+    const batchSize = 5;
     const startIdx = batch * batchSize;
     const batchSearches = allSearches.slice(startIdx, startIdx + batchSize);
 
