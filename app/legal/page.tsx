@@ -38,7 +38,7 @@ export default function LegalPage() {
           </h2>
           <ul className="list-disc list-inside space-y-1">
             <li>Freeプラン: 無料（月額0円）</li>
-            <li>Proプラン: 月額980円（税込）</li>
+            <li>Proプラン: 月額300円（税込）</li>
           </ul>
         </section>
 

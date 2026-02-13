@@ -12,10 +12,10 @@ const plans = [
     price: "0",
     description: "まずは無料で始める",
     features: [
-      { text: "検索月10回", included: true },
+      { text: "検索1日3回", included: true },
       { text: "基本フィルター", included: true },
       { text: "チャンネル詳細閲覧", included: true },
-      { text: "ウォッチリスト（3件まで）", included: true },
+      { text: "ウォッチリスト", included: false },
       { text: "全フィルター利用", included: false },
       { text: "データエクスポート", included: false },
     ],
@@ -25,7 +25,7 @@ const plans = [
   {
     name: "Pro",
     planKey: "pro",
-    price: "980",
+    price: "300",
     description: "本格的なYouTube分析に",
     features: [
       { text: "無制限検索", included: true },
@@ -189,12 +189,12 @@ export default function PricingPage() {
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               <tr>
                 <td className="py-4 px-4 text-gray-700 dark:text-gray-300">検索回数</td>
-                <td className="py-4 px-4 text-center text-gray-600 dark:text-gray-400">月10回</td>
+                <td className="py-4 px-4 text-center text-gray-600 dark:text-gray-400">1日3回</td>
                 <td className="py-4 px-4 text-center text-gray-900 dark:text-white font-medium">無制限</td>
               </tr>
               <tr>
                 <td className="py-4 px-4 text-gray-700 dark:text-gray-300">ウォッチリスト</td>
-                <td className="py-4 px-4 text-center text-gray-600 dark:text-gray-400">3件まで</td>
+                <td className="py-4 px-4 text-center"><X className="w-5 h-5 text-gray-300 mx-auto" /></td>
                 <td className="py-4 px-4 text-center text-gray-900 dark:text-white font-medium">無制限</td>
               </tr>
               <tr>
